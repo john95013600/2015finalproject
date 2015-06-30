@@ -65,7 +65,7 @@ $mg[$i]=$msg;// 聊天訊息儲存到陣列中
 
 //統計累積該用戶的計數器(num)到伺服器的計數器($i)的所有新聊天訊息，接下來要送回給用戶client顯示的
 for($c=$num+1; $c<$i+1; $c++)
-$output= $output . $mg[$c]."<br>" ;
+$output= $output . $mg[$c] ;
 
 $send_num= sprintf( "%d",$i ); //把數字轉變成字串
 $output=$send_num.$code.$output;//數字加在檔頭送回給client，表示現在用戶看到第幾句話了，就是用戶的num

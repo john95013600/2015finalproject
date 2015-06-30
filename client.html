@@ -20,6 +20,7 @@ text-align: center;  background-color: #fff;}
 .btn{cursor:pointer;width: 80px;margin: 20px auto;background-color: #766c61;padding: 5px 10px; color: #FFF;}
 .btn:hover{background-color: #38342e;}
 #me{height: 50px;display: inline-flex;font-size: 20px;}
+.logout{position: absolute;right: 0px;top: 10px;cursor:pointer;background-color: #3b5998;color: #FFF;border-radius: 5px;padding: 5px;}
 </style>
 
 <script>
@@ -33,7 +34,7 @@ var num=0; //num定義為chat和server互相確認之目前第幾句msg
 var http_request =false;//看到這就知道AJAX在準備了
 
 function send(){
-var txt,msg,msg2;
+var txt,msg,msg2,date;
 txt = $("msg");
 msg2 = txt.value.replace(/\n/,"");
 msg2 = txt.value.replace(/\n/g,"<br>");
@@ -53,7 +54,10 @@ msg = name+":<br>"+msg2;
 // console.log(msg);
 // console.log(msg2.substring(0,4));
 
+date = new Date();
 
+//msg = msg +(date.getHours()>12?' 下午':' 上午')+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+msg = '<div style=margin-bottom:5px title='+timeformat()+'>'+msg+'</div>';
 
 if(!msg){ alert("訊息不能為全空白的啦"); return; }
 
@@ -61,9 +65,9 @@ str_num =num.toString()
 
 //要傳出去給server的數據為複合資訊: 聊天訊息計數+區隔碼+輸入之訊息
 msg=str_num+"^znl^"+msg; 
-// console.log("x"+txt.value+"x");
+
 txt.value="";
-// console.log("clear"+txt.value+"x");
+
 
 try {
 http_request = new XMLHttpRequest();
@@ -80,6 +84,7 @@ alert("Error initializing XMLHttpRequest!");
 }
 
 var url = "midterm.php?msg=" + msg;
+
 http_request.open("GET", url, true);
 http_request.send(null);
 http_request.onreadystatechange = function() { alertContents(http_request); };
@@ -210,12 +215,21 @@ function setCaretPosition(ctrl, pos){
 	}
 }
 
+function timeformat () {
+  now = new Date();
+  hour =  now.getHours(); 
+  if (hour.length == 1) { hour = (hour>12?" 下午":" 上午")+"0" + hour; }
+  else {  hour = (hour>12?" 下午":" 上午")+hour;}
+  minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
+  second = "" + now.getSeconds(); if (second.length == 1) { second = "0" + second; }
+  return hour + ":" + minute + ":" + second;
+}
+
 // Utilities 輸入介面相關設定
 function $(id){ return document.getElementById(id); }
-function log_show(msg){ $("log").innerHTML+='<div style="margin-bottom:5px;">'+msg+'</div>'; }
+function log_show(msg){ $("log").innerHTML+=msg; }
 function onkey(event){ 
 	if(event.keyCode==13 && !event.shiftKey){ send(); setCaretPosition(document.getElementById('msg'),0);} 
-	// if(event.keyCode==13 && event.shiftKey){ pasteIntoInput(this, "\n");}
 } //這是enter 功能
 </script>
 </head>
@@ -258,7 +272,7 @@ function fblogin() {
      			var me = document.getElementById('me');
  				me.innerHTML='<a href='+response.link+' target="_blank">'+'<img src="https://graph.facebook.com/' 
             	+ response.id + '/picture" style="margin-right:5px"/></a>' 
-          	 	+ '<div style="margin:auto 0px">'+response.name+'</div>';
+          	 	+ '<div style="margin:auto 0px">'+response.name+'</div>'+'<div class="logout" onclick="logout()">facebook登出</div>';
        	  		photo = "https://graph.facebook.com/"+response.id+"/picture";
         	    name = response.name;
         	    document.getElementsByClassName("login_frame")[0].style.display="none";
@@ -274,6 +288,11 @@ function fblogin() {
 
 function logout(){
 	FB.logout(function(response) {
+		photo = photo2;
+		$('me').innerHTML="";
+		document.getElementsByClassName("login_frame")[0].style.display="block";
+		document.getElementsByClassName("main")[0].style.zIndex = "-1";
+		$('log').innerHTML="";
         alert("Thanks for useing our program!");
     });
 
