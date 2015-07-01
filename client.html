@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>ORZtobias之AJAX+SOCKET聊天室</title>
+<title>LOL_CHAT</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
@@ -10,7 +10,7 @@
 <style>
 html,body{font:14px Open Sans, Microsoft JhengHei, Arial, serif;}
 #log {width:100%; height:70%; border:10px solid #7F9DB9;box-sizing: border-box;word-wrap:break-word; overflow-y: scroll;}
-#msg {width:100%;height:15%; border:3px solid #555555;margin-top: 10px;}
+#msg {width:100%;height:15%; border:3px solid #555555;}
 .login_frame{border: solid 5px #45619D;width: 350px;height: 300px;margin: 0px auto;margin-top: 100px;border-radius: 10px;
 text-align: center;  background-color: #fff;}
 .main{width: 40%;height: 100%;position: absolute;left: 30%;top: 0px;z-index: -1;}
@@ -21,6 +21,28 @@ text-align: center;  background-color: #fff;}
 .btn:hover{background-color: #38342e;}
 #me{height: 50px;display: inline-flex;font-size: 20px;}
 .logout{position: absolute;right: 0px;top: 10px;cursor:pointer;background-color: #3b5998;color: #FFF;border-radius: 5px;padding: 5px;}
+#pics{cursor:pointer;color: #939683;}
+#pics:hover{color: #262721;}
+#showpic{position: absolute;display: none; bottom: 145px;width: 300px;height: 200px;border: solid 5px #393939;margin-left: 10px;}
+#triangle{border-left: 15px solid white;display: none;border-top: 15px solid #393939;border-right: 15px solid white;position: absolute;bottom: 130px;margin-left: 10px;}
+#pic1{height: 120px;width: 120px;background-image: url(http://i.imgur.com/3tSNWuf.png?1);background-size: 960px 120px;display: inline-block;}
+#pic2{height: 120px;width: 120px;background-image: url(http://i.imgur.com/IsIJCTC.png?1);background-size: 960px 120px;display: inline-block;}
+
+ #animate {
+  width: 120px; height: 120px;
+  /*background-image: url(http://i.imgur.com/3tSNWuf.png?1);*/
+  background-size:960px 120px; 
+  -webkit-animation: girl 1s steps(8,end) infinite;
+  animation: gril 1s steps(8,end) infinite;
+} 
+@-webkit-keyframes girl {
+  0% {background-position: 0 0}
+  100% {;background-position: -960px 0}
+}
+@keyframes gril {
+  0% {background-position: 0 0}
+  100% {;background-position: -960px 0}
+}
 </style>
 
 <script>
@@ -28,13 +50,25 @@ text-align: center;  background-color: #fff;}
 var photo = "100000366850931";
 var photo2 = photo;
 var name = "";
-
+var open_panel = 0,send_pic = 0,select_pic;
+var pic1 = "http://i.imgur.com/3tSNWuf.png?1",pic2 = "http://i.imgur.com/IsIJCTC.png?1";
 var num=0; //num定義為chat和server互相確認之目前第幾句msg
 
 var http_request =false;//看到這就知道AJAX在準備了
 
 function send(){
 var txt,msg,msg2,date;
+if(send_pic == 1)
+{
+	send_pic = 0;
+	showpic();
+	msg = name+":"+'<div id=animate style=background-image:url('+select_pic+')></div>';
+	msg = '<div style=margin-bottom:5px title='+timeformat()+'>'+msg+'</div>';
+	str_num =num.toString();
+	msg=str_num+"^znl^"+msg; 
+}
+else
+{
 txt = $("msg");
 msg2 = txt.value.replace(/\n/,"");
 msg2 = txt.value.replace(/\n/g,"<br>");
@@ -54,8 +88,6 @@ msg = name+":<br>"+msg2;
 // console.log(msg);
 // console.log(msg2.substring(0,4));
 
-date = new Date();
-
 //msg = msg +(date.getHours()>12?' 下午':' 上午')+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
 msg = '<div style=margin-bottom:5px title='+timeformat()+'>'+msg+'</div>';
 
@@ -65,9 +97,10 @@ str_num =num.toString()
 
 //要傳出去給server的數據為複合資訊: 聊天訊息計數+區隔碼+輸入之訊息
 msg=str_num+"^znl^"+msg; 
-
+console.log(msg);
 txt.value="";
-
+}
+}
 
 try {
 http_request = new XMLHttpRequest();
@@ -82,13 +115,12 @@ if (!http_request)
 {
 alert("Error initializing XMLHttpRequest!");
 }
-
+console.log(msg);
 var url = "midterm.php?msg=" + msg;
 
 http_request.open("GET", url, true);
 http_request.send(null);
 http_request.onreadystatechange = function() { alertContents(http_request); };
-}
 }
 
 //====此段為接收server回傳值並進行處理後，再丟上螢幕顯示====
@@ -133,7 +165,7 @@ log_show(sv_msg);
 }
 
 }
-setInterval("polling();", 5000) //每隔五秒發出一次查詢
+setInterval("polling();", 1000) //每隔五秒發出一次查詢
 polling();
 console.log(num);
 function polling(){
@@ -187,34 +219,6 @@ function show(n){
 	document.getElementsByClassName("main")[0].style.zIndex = "1";
 }
 
-function doGetCaretPosition (ctrl) {
-	var CaretPos = 0;	// IE Support
-	if (document.selection) {
-	ctrl.focus ();
-		var Sel = document.selection.createRange ();
-		Sel.moveStart ('character', -ctrl.value.length);
-		CaretPos = Sel.text.length;
-	}
-	// Firefox support
-	else if (ctrl.selectionStart || ctrl.selectionStart == '0')
-		CaretPos = ctrl.selectionStart;
-	return (CaretPos);
-}
-function setCaretPosition(ctrl, pos){
-	if(ctrl.setSelectionRange)
-	{
-		ctrl.focus();
-		ctrl.setSelectionRange(pos,pos);
-	}
-	else if (ctrl.createTextRange) {
-		var range = ctrl.createTextRange();
-		range.collapse(true);
-		range.moveEnd('character', pos);
-		range.moveStart('character', pos);
-		range.select();
-	}
-}
-
 function timeformat () {
   now = new Date();
   hour =  now.getHours(); 
@@ -225,11 +229,25 @@ function timeformat () {
   return hour + ":" + minute + ":" + second;
 }
 
+function showpic(){
+	if(open_panel == 0)
+	{
+		$('showpic').style.display="block";
+		$('triangle').style.display="block";
+		open_panel = 1;
+	}
+	else{
+		$('showpic').style.display="none";
+		$('triangle').style.display="none";
+		open_panel = 0;
+	}
+}
+
 // Utilities 輸入介面相關設定
 function $(id){ return document.getElementById(id); }
 function log_show(msg){ $("log").innerHTML+=msg; }
 function onkey(event){ 
-	if(event.keyCode==13 && !event.shiftKey){ send(); setCaretPosition(document.getElementById('msg'),0);} 
+	if(event.keyCode==13 && !event.shiftKey){ send();} 
 } //這是enter 功能
 </script>
 </head>
@@ -312,7 +330,14 @@ function logout(){
 </div>
 <div class="main">
 	<div id="me"></div>
-	<div id="log"></div>
+	<div id="log">
+	</div>
+	<div id="pics" onclick="showpic();"><i class="fa fa-smile-o"></i>  貼圖</div>
+	<div id="showpic">
+		<div id="pic1" onclick="send_pic=1;select_pic=pic1; send();"></div>
+		<div id="pic2" onclick="send_pic=1;select_pic=pic2; send();"></div>
+	</div>
+	<div id="triangle"></div>
 	<textarea name="msg" id="msg" cols="30" rows="10" onkeypress="onkey(event)"/></textarea>
 	<!-- <input id="msg" type="textbox" onkeypress="onkey(event)"/ > -->
 </div>
