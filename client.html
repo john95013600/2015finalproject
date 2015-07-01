@@ -23,10 +23,11 @@ text-align: center;  background-color: #fff;}
 .logout{position: absolute;right: 0px;top: 10px;cursor:pointer;background-color: #3b5998;color: #FFF;border-radius: 5px;padding: 5px;}
 #pics{cursor:pointer;color: #939683;}
 #pics:hover{color: #262721;}
-#showpic{position: absolute;display: none; bottom: 145px;width: 300px;height: 200px;border: solid 5px #393939;margin-left: 10px;}
-#triangle{border-left: 15px solid white;display: none;border-top: 15px solid #393939;border-right: 15px solid white;position: absolute;bottom: 130px;margin-left: 10px;}
+#showpic{position: absolute;display: none; bottom: 170px;width: 380px;height: 120px;border: solid 5px #393939;margin-left: 10px;}
+#triangle{background-image: url(http://i.imgur.com/GaEH9rd.png);position: absolute;bottom: 155px;margin-left: 10px;  width: 30px;height: 15px;display: none;}
 #pic1{height: 120px;width: 120px;background-image: url(http://i.imgur.com/3tSNWuf.png?1);background-size: 960px 120px;display: inline-block;}
 #pic2{height: 120px;width: 120px;background-image: url(http://i.imgur.com/IsIJCTC.png?1);background-size: 960px 120px;display: inline-block;}
+#pic3{height: 120px;width: 120px;background-image: url(http://i.imgur.com/n4QHSht.png?1);background-size: 960px 120px;display: inline-block;}
 
  #animate {
   width: 120px; height: 120px;
@@ -51,7 +52,8 @@ var photo = "100000366850931";
 var photo2 = photo;
 var name = "";
 var open_panel = 0,send_pic = 0,select_pic;
-var pic1 = "http://i.imgur.com/3tSNWuf.png?1",pic2 = "http://i.imgur.com/IsIJCTC.png?1";
+var pic1 = "http://i.imgur.com/3tSNWuf.png?1",pic2 = "http://i.imgur.com/IsIJCTC.png?1"
+	pic3 = "http://i.imgur.com/n4QHSht.png?1";
 var num=0; //num定義為chat和server互相確認之目前第幾句msg
 
 var http_request =false;//看到這就知道AJAX在準備了
@@ -243,6 +245,13 @@ function showpic(){
 	}
 }
 
+function showpic2()
+{
+	console.log("click");
+	if(open_panel == 1)
+		showpic();
+}
+
 // Utilities 輸入介面相關設定
 function $(id){ return document.getElementById(id); }
 function log_show(msg){ $("log").innerHTML+=msg; }
@@ -330,16 +339,16 @@ function logout(){
 </div>
 <div class="main">
 	<div id="me"></div>
-	<div id="log">
+	<div id="log" onclick="showpic2();">
 	</div>
 	<div id="pics" onclick="showpic();"><i class="fa fa-smile-o"></i>  貼圖</div>
 	<div id="showpic">
 		<div id="pic1" onclick="send_pic=1;select_pic=pic1; send();"></div>
 		<div id="pic2" onclick="send_pic=1;select_pic=pic2; send();"></div>
+		<div id="pic3" onclick="send_pic=1;select_pic=pic3; send();"></div>
 	</div>
 	<div id="triangle"></div>
 	<textarea name="msg" id="msg" cols="30" rows="10" onkeypress="onkey(event)"/></textarea>
-	<!-- <input id="msg" type="textbox" onkeypress="onkey(event)"/ > -->
 </div>
 </body>
 </html>
