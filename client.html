@@ -74,23 +74,17 @@ else
 txt = $("msg");
 msg2 = txt.value.replace(/\n/,"");
 msg2 = txt.value.replace(/\n/g,"<br>");
-console.log(msg2);
 if(msg2 == "" || msg2 == "<br>")
-{console.log(msg2);$('msg').value="";}
+{$('msg').value="";}
 else
 {
 if(msg2.substring(0,4)=="<br>")         //自動換行
 msg2 = msg2.substring(4,msg2.length);
-// console.log(msg2+"X"+msg2.length);
 if(msg2.length >4 &&  msg2.substring(msg2.length-4,msg2.length)=="<br>")
 msg2 = msg2.substring(0,msg2.length-4);
-// console.log(msg2.substring(msg2.length-4,msg2.length));
-// console.log(msg2.substring(0,msg2.length-4));
-msg = name+":<br>"+msg2;
-// console.log(msg);
-// console.log(msg2.substring(0,4));
 
-//msg = msg +(date.getHours()>12?' 下午':' 上午')+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+msg = name+":<br>"+msg2;
+
 msg = '<div style=margin-bottom:5px title='+timeformat()+'>'+msg+'</div>';
 
 if(!msg){ alert("訊息不能為全空白的啦"); return; }
@@ -117,12 +111,12 @@ if (!http_request)
 {
 alert("Error initializing XMLHttpRequest!");
 }
-console.log(msg);
+
 var url = "midterm.php?msg=" + msg;
 
 http_request.open("GET", url, true);
 http_request.send(null);
-http_request.onreadystatechange = function() { alertContents(http_request); };
+http_request.onreadystatechange = function() { console.log(http_request);alertContents(http_request); };
 }
 
 //====此段為接收server回傳值並進行處理後，再丟上螢幕顯示====
@@ -152,7 +146,7 @@ str_num=doc.substring(0,pos1);//得到聊天訊息序號，不過這是字串
 num = parseInt(str_num) ;
 console.log(num);
 sv_msg=doc.substring(pos2,leng);//這就是server傳來的目前最後一則聊天訊息
-
+sv_msg=sv_msg.replace(/<3/g,'<i class="fa fa-heart" style="color:#FFA3A3"></i>');
 //以下，pos2=leng，表示只傳回來這兩個:num^znl^，識別碼後面沒有東西了，不用做任何動作
 //else則秀出聊天訊息
 
@@ -247,7 +241,6 @@ function showpic(){
 
 function showpic2()
 {
-	console.log("click");
 	if(open_panel == 1)
 		showpic();
 }
@@ -294,8 +287,7 @@ function fblogin() {
 		if (response.authResponse) {
 			//同意授權並且登入執行這段
 			FB.api('/me', function(response) {
-     			//alert('我的Email為: '+response.email+'我的姓名為: '+ response.name);
-     			console.log(response);
+     			//console.log(response);
      			var me = document.getElementById('me');
  				me.innerHTML='<a href='+response.link+' target="_blank">'+'<img src="https://graph.facebook.com/' 
             	+ response.id + '/picture" style="margin-right:5px"/></a>' 
